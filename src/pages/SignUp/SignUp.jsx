@@ -1,16 +1,17 @@
-import { useContext } from "react";
+
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
-import { AuthContext } from "../../Provider/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import SocialLogin from "../SocialLogin/SocialLogin";
+import useAuth from "../../hooks/useAuth";
 
 
 const SignUp = () => {
     const { register, handleSubmit, reset, formState: {errors }
     } = useForm();
 
-    const { createUser, updateUserProfile } = useContext(AuthContext);
+    const { createUser, updateUserProfile } = useAuth();
     const navigate = useNavigate();
 
 
@@ -22,17 +23,32 @@ const SignUp = () => {
                 console.log(loggedUser);
 
                 updateUserProfile(data.name, data.photoURL)
+             
                     .then(() => {
-                        console.log('user pro');
-                        reset();
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Your work has been saved',
-                            showConfirmButton: false,
-                            timer: 1500
+                       const savedUser = {name:data.name, email:data.email}
+                        fetch('http://localhost:5000/users', {
+                            method: 'POST',
+                            headers: {
+                                'content-type': 'application/json'
+                            },
+                            body:JSON.stringify(savedUser)
                         })
-                        navigate("/")
+                    .then(res =>res.json())
+                            .then(data => {
+                                if (data.insertedId) {
+                                    reset();
+                                    Swal.fire({
+                                        position: 'top-end',
+                                        icon: 'success',
+                                        title: 'Your work has been saved',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    })
+                                    navigate("/")
+                        }
+                    })
+
+                      
                     })
                     .catch(error => console.log(error));
             })
@@ -98,6 +114,7 @@ const SignUp = () => {
                             </div>
                         </form>
                         <p><small> Already hav an account? <Link to="/login"> Go to login</Link></small></p>
+                        <SocialLogin></SocialLogin>
                     </div>
                 </div>
             </div>

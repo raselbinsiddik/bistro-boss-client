@@ -1,20 +1,21 @@
-import { useContext, useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 import { loadCaptchaEnginge, LoadCanvasTemplate, validateCaptcha } from 'react-simple-captcha';
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../Provider/AuthProvider';
+
 import { Helmet } from 'react-helmet-async';
 import Swal from 'sweetalert2';
+import SocialLogin from '../SocialLogin/SocialLogin';
+import useAuth from '../../hooks/useAuth';
 
 const Login = () => {
     
     const [disabled, setDisabled] = useState(true);
-    const { signIn } = useContext(AuthContext);
+    const { signIn } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
 
-    const from = location.state?.from?.pathname ||
-        "/";
+    const from = location.state?.from?.pathname || "/";
 
 
     useEffect(() => {
@@ -92,12 +93,12 @@ const Login = () => {
                                    
                                 </div>
                                 <div className="form-control mt-6">
-
                                     <input disabled={disabled} className="btn btn-primary" type="submit" value="Login" />
                                 </div>
                             </div>
                         </form>
                         <p><small>new here? <Link to="/signup">go to sign in</Link></small></p>
+                        <SocialLogin></SocialLogin>
                     </div>
 
                 </div>
